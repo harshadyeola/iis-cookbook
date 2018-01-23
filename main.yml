@@ -27,10 +27,6 @@ Parameters:
     AllowedPattern: "[a-zA-Z][a-zA-Z0-9]*"
     ConstraintDescription: must begin with a letter and contain only alphanumeric
       characters.
-  MysqlRootPassword:
-    Description: MysqlRootPassword
-    NoEcho: 'true'
-    Type: String
 Resources:
   myStack:
     Type: AWS::OpsWorks::Stack
@@ -42,7 +38,7 @@ Resources:
       UseCustomCookbooks: 'true'
       CustomCookbooksSource:
         Type: git
-        Url: git://github.com/amazonwebservices/opsworks-example-cookbooks.git
+        Url: git@github.com:harshadyeola/iis-rabbitmq-opsworks.git
       CustomJson: {
                     "rabbitmq": {
                       "policies": {
@@ -83,10 +79,10 @@ Resources:
       Name: MyRabbitMQ
       CustomRecipes:
         Setup:
-        - rabbitmq::install
+        - rabbitmq-cookbook::install
         Configure:
-        - rabbitmq::cluster
-        - rabbitmq::policy_management
+        - rabbitmq-cookbook::cluster
+        - rabbitmq-cookbook::policy_management
         - rabbitmq::
       VolumeConfigurations:
       - MountPoint: "/var/lib/rabbitmq"
@@ -140,18 +136,14 @@ Resources:
         Ref: myStack
       LayerIds:
       - Ref: DBLayer
-      InstanceType: m1.small
+      InstanceType: t2.micro
   myApp:
     Type: AWS::OpsWorks::App
     Properties:
       StackId:
         Ref: myStack
-      Type: php
+      Type: Windows
       Name:
         Ref: AppName
-      AppSource:
-        Type: git
-        Url: git://github.com/amazonwebservices/opsworks-demo-php-simple-app.git
-        Revision: version2
       Attributes:
         DocumentRoot: web
